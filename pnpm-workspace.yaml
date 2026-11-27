@@ -1,0 +1,6 @@
+# Electron's tooling expects a flat node_modules layout; pnpm's default strict
+# layout hides transitive bins from it, so hoist everything.
+shamefullyHoist: true
+allowBuilds:
+  electron: true
+  esbuild: true

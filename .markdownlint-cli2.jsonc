@@ -1,0 +1,31 @@
+// Markdown lint (`pnpm lint:md`, run by `pnpm lint`): every `*.md` file of the repository
+// except the installed packages, the build outputs, the generated changelog and the docs' cache.
+{
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/out/**",
+    "**/.vitepress/cache/**",
+    "CHANGELOG.md"
+  ],
+  "config": {
+    "default": true,
+    // Long lines and wide tables are the docs' style: paragraphs and table rows stay on one line.
+    "MD013": false,
+    "MD060": false,
+    // VitePress containers and Vue components in the guide use inline HTML.
+    "MD033": false,
+    // A heading repeated under different parents ("Example", "Out of scope") is fine.
+    "MD024": { "siblings_only": true },
+    // Nested lists keep the indentation their editors gave them (the roadmap's tabs included).
+    "MD005": false,
+    "MD007": false,
+    "MD010": false,
+    "MD029": false,
+    // A page uses one emphasis style, either of the two.
+    "MD049": { "style": "consistent" },
+    // TODO.md indents the code of its list items.
+    "MD046": false
+  }
+}

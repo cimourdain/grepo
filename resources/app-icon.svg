@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Grepo</title>
+  <!-- A letter G, mirrored (reversed), purple, on a transparent background, centered and 95% of the height. -->
+  <g transform="translate(1024,0) scale(-1,1)" fill="none" stroke="#7C3AED" stroke-width="190">
+    <path d="M 802.87 250.10 A 391.40 391.40 0 1 0 903.40 512.00"/>
+    <path d="M 512.00 512.00 H 998.40"/>
+  </g>
+</svg>
