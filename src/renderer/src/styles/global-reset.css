@@ -1,0 +1,15 @@
+/*
+ * Global style reset for the renderer process.
+ *
+ * Removes the browser's default `html`/`body` margin and padding, and
+ * stretches the `#app` mount point to the full window, so the app shell
+ * renders edge-to-edge with no white border around it. Imported once
+ * from `main.ts`, before the root component is mounted.
+ */
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}

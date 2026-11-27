@@ -1,0 +1,53 @@
+# electron-builder packaging config.
+#
+# - `pnpm build` packages an unpacked app shell for the host (`dist/<platform>-unpacked/`).
+# - `pnpm build:linux` (`make build-linux`) packages the Linux x64 AppImage, `dist/Grepo-<version>.AppImage`.
+# - `pnpm build:win` (`make build-win`) packages the Windows x64 installer (NSIS),
+#   `dist/Grepo-Setup-<version>.exe`, and a portable `dist/Grepo-<version>-portable.exe`.
+#
+# Nothing is published (`--publish never` in package.json). The app has no native module, so
+# nothing is rebuilt per platform, and Windows can be built from Linux.
+appId: com.grepo.app
+productName: Grepo
+# No native module: nothing to rebuild for Electron.
+npmRebuild: false
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{eslint.config.mjs,.markdownlint-cli2.jsonc,.prettierignore,.prettierrc.yaml,README.md}'
+  - '!{AGENTS.md,pnpm-lock.yaml,pnpm-workspace.yaml,Makefile}'
+  - '!{docs,dist}/**'
+  - '!{tsconfig*.json,vitest.config.ts}'
+  - '!**/*.test.{js,ts}'
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+  executableName: grepo
+  maintainer: grepo
+  category: Utility
+  icon: resources/app-icon.png
+  desktop:
+    StartupWMClass: grepo
+appImage:
+  artifactName: ${productName}-${version}.${ext}
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: resources/app-icon.png
+  # Editing the executable's resources (its icon, its version) needs Wine when building from
+  # Linux. Skipped so that `make build-win` works without it: the executable then keeps
+  # Electron's icon, the installer and the shortcuts use the app's.
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-Setup-${version}.${ext}
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}

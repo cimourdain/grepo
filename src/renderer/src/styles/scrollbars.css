@@ -1,0 +1,9 @@
+/*
+ * The colors of every scrollbar of the renderer process, from the theme's
+ * variables. `scrollbar-color` is inherited, so setting it on the root covers
+ * every scrollable element, the code editor included. Imported once from
+ * `main.ts`.
+ */
+html {
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}

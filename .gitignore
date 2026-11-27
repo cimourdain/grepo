@@ -1,0 +1,8 @@
+node_modules
+out
+dist
+*.log
+.DS_Store
+.pnpm-store
+docs/.vitepress/cache
+docs/.vitepress/dist

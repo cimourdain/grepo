@@ -1,0 +1,104 @@
+# Checks the code: ESLint and the Markdown lint, the type check, the test suite, and the Linux and
+# Windows builds (`pnpm build:linux`, `pnpm build:win`: type check, bundle and electron-builder),
+# so a change that breaks one of them is caught before merging. The jobs run in parallel. The built
+# files are kept as a workflow artifact for a few days to try them; they are never published (the
+# release workflow does that).
+#
+# - A pull request from a branch that isn't a release-please one: every check.
+# - A pull request from a release-please branch (its name starts with `release-please`): no check,
+#   it only bumps the version and the changelog.
+# - A push to `main`: every check, always. The release itself (the build and upload of the
+#   packages) is the job of release.yml, which only runs it when the push merged a release pull
+#   request.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    # `github.head_ref` is the pull request's branch, empty on a push.
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      # `pnpm lint` fixes the files (eslint --fix): CI only checks them.
+      - name: ESLint
+        run: pnpm exec eslint .
+
+      - name: Markdown lint
+        run: pnpm lint:md
+
+  typecheck:
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Type check
+        run: pnpm typecheck
+
+  test:
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Tests
+        run: pnpm test
+
+  build-linux:
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Build the AppImage
+        run: pnpm build:linux
+
+      - name: Keep the AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: grepo-linux
+          path: dist/Grepo-*.AppImage
+          retention-days: 7
+
+  # The app has no native module: Windows is built from Linux, no Wine needed
+  # (electron-builder.yml sets `win.signAndEditExecutable: false`).
+  build-win:
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Build the installer and the portable executable
+        run: pnpm build:win
+
+      - name: Keep the installer and the portable executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: grepo-windows
+          path: |
+            dist/Grepo-Setup-*.exe
+            dist/Grepo-*-portable.exe
+          retention-days: 7

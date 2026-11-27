@@ -1,0 +1,26 @@
+# Prepares a runner to lint, test or build the app: the pinned Node and pnpm, and the dependencies.
+# Shared by the checks (ci.yml) and the release workflow (release.yml).
+name: Set up the build
+description: Installs the pinned Node, pnpm and the dependencies.
+
+runs:
+  using: composite
+  steps:
+    # The Node major version comes from package.json's "engines.node" (like the Makefile), so CI
+    # never drifts from local builds.
+    - name: Read the pinned Node version
+      id: versions
+      shell: bash
+      run: echo "node-major=$(jq -r '.engines.node' package.json | grep -oE '[0-9]+' | head -n 1)" >> "$GITHUB_OUTPUT"
+
+    # Installs the pnpm version of package.json's "packageManager" field.
+    - uses: pnpm/action-setup@v6
+
+    - uses: actions/setup-node@v7
+      with:
+        node-version: ${{ steps.versions.outputs.node-major }}
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
