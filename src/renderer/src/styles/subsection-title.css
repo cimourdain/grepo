@@ -1,0 +1,11 @@
+/*
+ * The title of a subsection of a page's section (an `h4` under an `h3`): "Elements metadata",
+ * "Releases" and "Metadata configuration" of the Serie and Manga pages' Metadata tab. One class
+ * so every subsection title looks the same. Imported once from `main.ts`.
+ */
+.subsection-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}

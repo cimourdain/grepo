@@ -1,0 +1,86 @@
+/* Shared look of the Settings tabs' forms: fields, buttons and messages. */
+.settings-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.settings-tab h3 {
+  margin: 0;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-field > span {
+  font-weight: 600;
+}
+
+.settings-field input[type='text'],
+.settings-field input[type='password'] {
+  padding: 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: ui-monospace, monospace;
+}
+
+.settings-field input:focus {
+  outline: 1px solid var(--color-accent);
+}
+
+.settings-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.settings-button {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.settings-button:not(:disabled):hover {
+  background: var(--color-surface-active);
+}
+
+.settings-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.settings-button--primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.settings-button--primary:not(:disabled):hover {
+  background: var(--color-accent);
+  filter: brightness(1.1);
+}
+
+.settings-message {
+  margin: 0;
+  color: var(--color-success);
+}
+
+.settings-message--error {
+  color: var(--color-danger);
+}
+
+.settings-message--warning {
+  color: var(--color-warning);
+}

@@ -1,0 +1,26 @@
+# Rejects pull requests containing commits that don't follow https://www.conventionalcommits.org/
+# — see commitlint.config.cjs for the exact rule set (`@commitlint/config-conventional`).
+# Conventional commit messages are what release-please (release.yml) parses to compute version
+# bumps and changelog entries.
+name: Conventional Commits
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  commitlint:
+    # No check on a release-please branch (its name starts with `release-please`).
+    if: ${{ !startsWith(github.head_ref, 'release-please') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint PR commits
+        uses: wagoid/commitlint-github-action@v6

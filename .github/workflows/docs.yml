@@ -1,0 +1,74 @@
+# Builds the documentation site (VitePress, from docs/en/): every pull request touching it, so a
+# dead link is caught before merging, and every push to main, which also deploys it to GitHub
+# Pages (a manual run deploys too).
+#
+# GitHub's Settings → Pages → Source must be set to "GitHub Actions". The site is served under
+# `/<repository>/`: `DOCS_BASE` tells VitePress (docs/.vitepress/config.mts).
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "docs/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Node major version comes from package.json's "engines.node" (like the Makefile).
+      - name: Read the pinned Node version
+        id: versions
+        run: echo "node-major=$(jq -r '.engines.node' package.json | grep -oE '[0-9]+' | head -n 1)" >> "$GITHUB_OUTPUT"
+
+      # Installs the pnpm version of package.json's "packageManager" field.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ steps.versions.outputs.node-major }}
+          cache: pnpm
+
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
+
+      # The site needs no Electron binary: the install scripts are skipped.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build the site
+        env:
+          DOCS_BASE: /${{ github.event.repository.name }}/
+        run: pnpm docs:build
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
