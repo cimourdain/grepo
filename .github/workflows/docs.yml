@@ -9,11 +9,17 @@ name: Docs
 on:
   push:
     branches: [main]
+    paths:
+      - "docs/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/docs.yml"
+      - ".release/release-please-manifest.json"
   pull_request:
     paths:
       - "docs/**"
       - "pnpm-lock.yaml"
       - ".github/workflows/docs.yml"
+      - ".release/release-please-manifest.json"
   workflow_dispatch:
 
 permissions:
